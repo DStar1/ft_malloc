@@ -1,0 +1,4 @@
+#!/bin/bash
+make re
+export DYLD_LIBRARY_PATH=..
+/usr/bin/time -l ./test_malloc

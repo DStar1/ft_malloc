@@ -17,5 +17,16 @@ typedef struct		s_link {
 	struct s_link	*next;
 }					t_link;
 
+typedef struct		s_allocated {
+	t_link			*small;
+	size_t			small_max;
+	t_link			*med;
+	size_t			med_max;
+	t_link			*large;
+}					t_allocated;
+
+void				*ft_malloc(size_t size);
+// static void			*add_small_link(t_link *start, long size, long max);
+t_allocated			*allocated_data();
 
 #endif 

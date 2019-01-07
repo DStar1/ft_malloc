@@ -1,13 +1,27 @@
-NAME = ft_malloc
+ifeq ($(HOSTTYPE),)
+	HOSTTYPE := $(shell uname -m)_$(shell uname -s)
+endif
 
-FLAGS = -Wall -Wextra -Werror -g
+NAME =			libft_malloc_$(HOSTTYPE).so
+
+LINK =			libft_malloc.so
+
+CC =			clang
+
+FLAGS =			-Wall -Werror -Wextra -fPIC
+###############
+# NAME = ft_malloc
+
+# FLAGS = -Wall -Wextra -Werror -g
+
+# CC = gcc
 
 SRC_DIR = ./srcs/
 OBJ_DIR = ./objs/
 INC_DIR = ./includes/
 LIBFT_DIR = ./libft/
 
-SRC_FILES = main.c
+SRC_FILES = ft_malloc.c
 OBJ_FILES = $(SRC_FILES:.c=.o)
 
 SRC = $(addprefix $(SRC_DIR), $(SRC_FILES))
@@ -29,8 +43,10 @@ $(LIBFT):
 
 $(NAME): $(OBJ)
 	printf "\033[32m%s\n\033[0m" "Compiling..."
-	@gcc $(OBJ) $(LNK) -lm $(LIBFT_DIR)/libft.a -o $(NAME)
+	@$(CC) $(OBJ) $(LNK) -lm $(LIBFT_DIR)/libft.a -shared -o $(NAME)
 	printf "\033[32m[ ✔ ] %s\n\033[0m" "Created $(NAME)"
+	@/bin/rm -f $(LINK)
+	ln -s $(NAME) $(LINK)
 
 clean:
 	@rm -Rf $(OBJ_DIR)
@@ -39,8 +55,9 @@ clean:
 
 fclean: clean
 	@rm -f $(NAME)
+	@rm -f $(LINK)
 	@make -C $(LIBFT_DIR) fclean
-	printf "\033[31m[ ✔ ] %s\n\033[0m" "Fcleaned $(NAME)"
+	printf "\033[31m[ ✔ ] %s\n\033[0m" "Fcleaned $(NAME) and $(LINK)"
 
 re: fclean all
 

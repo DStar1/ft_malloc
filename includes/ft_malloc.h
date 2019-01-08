@@ -12,6 +12,9 @@
 # define MED_PAGE_SIZE 32
 # define MED_SIZE (32 * 4096)
 
+/*
+** Old way, less efficient
+*/
 typedef struct		s_link {
 	struct s_link	*end;
 	struct s_link	*next;
@@ -24,6 +27,22 @@ typedef struct		s_allocated {
 	size_t			med_max;
 	t_link			*large;
 }					t_allocated;
+
+/*
+** Trying different way, more efficient
+*/
+typedef struct		s_block {
+	char			end;
+	char			allocated;
+	int				size;
+	struct s_block	*next;
+}					t_block;
+
+typedef struct		s_pages {
+	t_block			*small;
+	t_block			*med;
+	t_block			*large;
+}					t_pages;
 
 void				*ft_malloc(size_t size);
 // static void			*add_small_link(t_link *start, long size, long max);

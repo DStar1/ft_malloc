@@ -6,7 +6,7 @@
 /*   By: hasmith <hasmith@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/26 12:39:44 by tanguy            #+#    #+#             */
-/*   Updated: 2019/01/06 22:21:19 by hasmith          ###   ########.fr       */
+/*   Updated: 2019/01/09 16:32:53 by hasmith          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,12 @@ void print(char *s)
 int		main()
 {
 	// ft_printf("Project %s successfully created! \n", argv[0]);
-	char *new = ft_malloc(sizeof(char)*9);
+	char *new = mm_malloc(sizeof(char)*9);
 	strcpy(new, "harrison");
 	printf("%s\n", new);
+	// char *new2 = mm_malloc(sizeof(char)*9);
+	// strcpy(new2, "notharry");
+	// printf("%s, %s\n", new, new2);
 	return (0);
 }
 

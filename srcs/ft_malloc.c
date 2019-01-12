@@ -6,7 +6,7 @@
 /*   By: hasmith <hasmith@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/08 19:32:16 by hasmith           #+#    #+#             */
-/*   Updated: 2019/01/09 19:32:30 by hasmith          ###   ########.fr       */
+/*   Updated: 2019/01/11 18:49:25 by hasmith          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,48 +27,93 @@ t_pages		*allocated_data()
 {
 	if (!data)
 	{
-		data = mmap(NULL, sizeof(t_pages) + getpagesize() * 100 * SMALL_PAGE_SIZE
-					+ getpagesize() * 100 * MED_PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+		printf("INN1\n");
+		data = mmap(NULL, sizeof(t_pages), PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+		printf("INN2: data: %p\n", data);
 		data->small_max = getpagesize() * 100 * SMALL_PAGE_SIZE;
-		data->small = (t_page*)(data + sizeof(t_pages) + OVERHEAD + 1);
+		data->small = (t_page*)mmap(NULL, getpagesize() * 100 * SMALL_PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+		data->small = data->small + sizeof(t_page) + 1;		
+		// data->small = block_header;
+		data->small += OVERHEAD;
 		// data->small->end = data->small + 2;
 		data->small->next = NULL;
-        GET_SIZE(HDRP(data->small)) = SMALL_SIZE - OVERHEAD;
+		printf("INN3: data->small: %p\n", data->small);
+        GET_SIZE(HDRP(data->small)) = sizeof(t_page) + (getpagesize() * 100 * SMALL_PAGE_SIZE) - OVERHEAD;
         GET_ALLOC(HDRP(data->small)) = 0;
         GET_END(HDRP(data->small)) = 1;
 		data->med_max = getpagesize() * 100 * MED_PAGE_SIZE;
-		data->med = (t_page*)(data->small_max + OVERHEAD + 1);
+		data->med = (t_page*)mmap(NULL, getpagesize() * 100 * MED_PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+		data->med = data->med + sizeof(t_page) + 1;
+		// data->med = block_header;
+		data->med += OVERHEAD;
+		printf("INN4: %p\n", data->med);
 		// data->med->end = data->med + 1;
 		data->med->next = NULL;
-        GET_SIZE(HDRP(data->med)) = MED_SIZE - OVERHEAD;
+		printf("INN5\n");
+        GET_SIZE(HDRP(data->med)) = sizeof(t_page) + (getpagesize() * 100 * MED_PAGE_SIZE) - OVERHEAD;
+		printf("INN6\n");
         GET_ALLOC(HDRP(data->med)) = 0;
         GET_END(HDRP(data->med)) = 1;
-		data->large = (t_page*)(data->med_max + OVERHEAD + 1);
-		// data->large->end = data->large + 1;
-		data->large->next = NULL;
-        // GET_SIZE(HDRP(data->large)) = 0;
-        GET_ALLOC(HDRP(data->large)) = 0;
-        GET_END(HDRP(data->large)) = 1;
+		printf("INN7\n");
+		// data->large = (t_page*)(data->med_max + OVERHEAD + 1);
+		// // data->large->end = data->large + 1;
+		// data->large->next = NULL;
+        // // GET_SIZE(HDRP(data->large)) = 0;
+        // GET_ALLOC(HDRP(data->large)) = 0;
+        // GET_END(HDRP(data->large)) = 1;
+
+		printf("t_pages: %p, small ptr: %p, med ptr: %p\n", data, data->small+OVERHEAD, data->med+OVERHEAD);
 	}
 	return (data);
 }
-
-// void *current_avail = NULL;
-// size_t current_avail_size = 0;
-// void *mm_malloc(size_t size) {
-//     size_t newsize = ALIGN(size);
-//     void *p;
-//     if (current_avail_size < newsize) {
-//         current_avail = mmap(0, CHUNK_ALIGN(newsize),
-//         PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON,
-//         -1, 0);
-//         current_avail_size = CHUNK_ALIGN(newsize);
-//     }
-//     p = current_avail;
-//     current_avail += newsize;
-//     current_avail_size -= newsize;
-//     return p;
+// t_pages *data = NULL;
+// t_pages		*allocated_data()
+// {
+// 	if (!data)
+// 	{
+// 		data = mmap(NULL, sizeof(t_pages) + getpagesize() * 100 * SMALL_PAGE_SIZE
+// 					+ getpagesize() * 100 * MED_PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+// 		data->small_max = getpagesize() * 100 * SMALL_PAGE_SIZE;
+// 		data->small = (t_page*)(data + sizeof(t_pages) + OVERHEAD + 1);
+// 		// data->small->end = data->small + 2;
+// 		data->small->next = NULL;
+//         GET_SIZE(HDRP(data->small)) = SMALL_SIZE - OVERHEAD;
+//         GET_ALLOC(HDRP(data->small)) = 0;
+//         GET_END(HDRP(data->small)) = 1;
+// 		data->med_max = getpagesize() * 100 * MED_PAGE_SIZE;
+// 		data->med = (t_page*)(data->small_max + OVERHEAD + 1);
+// 		// data->med->end = data->med + 1;
+// 		data->med->next = NULL;
+//         GET_SIZE(HDRP(data->med)) = MED_SIZE - OVERHEAD;
+//         GET_ALLOC(HDRP(data->med)) = 0;
+//         GET_END(HDRP(data->med)) = 1;
+// 		data->large = (t_page*)(data->med_max + OVERHEAD + 1);
+// 		// data->large->end = data->large + 1;
+// 		data->large->next = NULL;
+//         // GET_SIZE(HDRP(data->large)) = 0;
+//         GET_ALLOC(HDRP(data->large)) = 0;
+//         GET_END(HDRP(data->large)) = 1;
+// 	}
+// 	return (data);
 // }
+
+void *current_avail = NULL;
+size_t current_avail_size = 0;
+void *ft_malloc(size_t size) {
+    size_t newsize = ALIGN(size);
+    void *p;
+    if (current_avail_size < newsize) {
+        current_avail = mmap(0, CHUNK_ALIGN(newsize),
+        PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON,
+        -1, 0);
+        current_avail_size = CHUNK_ALIGN(newsize);
+    }
+    p = current_avail;
+	printf("%p\n", p);
+    current_avail += newsize;
+    current_avail_size -= newsize;
+    return p;
+}
 
 void *add_page(size_t size) {
     void *bp = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
@@ -113,8 +158,9 @@ void	*mm_malloc(size_t size)
 	t_page *node;
 
 	size += OVERHEAD;
-	if (size <= SMALL_SIZE)
-		return(small_med_link(allocated_data()->small, size, allocated_data()->small_max));
+	if (size <= SMALL_SIZE){
+		printf("Size small: %d, Size med: %d\n", (int)GET_SIZE(HDRP(allocated_data()->med)), (int)GET_SIZE(HDRP(allocated_data()->med)));
+		return(small_med_link(allocated_data()->small, size, allocated_data()->small_max));}
 	if (size <= MED_SIZE)
 		return(small_med_link(allocated_data()->med, size, allocated_data()->med_max));
 	node = allocated_data()->large;

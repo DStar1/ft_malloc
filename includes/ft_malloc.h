@@ -81,7 +81,7 @@ typedef struct		s_pages {
 
 
 
-// void				*ft_malloc(size_t size);
+void				*ft_malloc(size_t size);
 // // static void			*add_small_link(t_link *start, long size, long max);
 // t_allocated			*allocated_data();
 

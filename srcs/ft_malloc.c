@@ -6,20 +6,24 @@
 /*   By: hasmith <hasmith@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/08 19:32:16 by hasmith           #+#    #+#             */
-/*   Updated: 2019/01/11 18:49:25 by hasmith          ###   ########.fr       */
+/*   Updated: 2019/01/11 19:55:56 by hasmith          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_malloc.h"
 
-void set_allocated(void *bp, size_t size) {
+void set_allocated(void *bp, size_t size, char end) {
     size_t extra_size = GET_SIZE(HDRP(bp)) - size;
     if (extra_size > ALIGN(1 + OVERHEAD)) {
         GET_SIZE(HDRP(bp)) = size;
+		GET_ALLOC(HDRP((bp))) = 1;
+        GET_END(HDRP(bp)) = 0;
         GET_SIZE(HDRP(NEXT_BLKP(bp))) = extra_size;
         GET_ALLOC(HDRP(NEXT_BLKP(bp))) = 0;
+        GET_END(HDRP(NEXT_BLKP(bp))) = end;
+		printf("Last_size: %lu\n", extra_size);
     }
-    GET_ALLOC(HDRP(bp)) = 1;
+    // GET_ALLOC(HDRP(bp)) = 1;
 }
 
 t_pages *data = NULL;
@@ -34,7 +38,7 @@ t_pages		*allocated_data()
 		data->small = (t_page*)mmap(NULL, getpagesize() * 100 * SMALL_PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
 		data->small = data->small + sizeof(t_page) + 1;		
 		// data->small = block_header;
-		data->small += OVERHEAD;
+		data->small += OVERHEAD + 1;
 		// data->small->end = data->small + 2;
 		data->small->next = NULL;
 		printf("INN3: data->small: %p\n", data->small);
@@ -45,7 +49,7 @@ t_pages		*allocated_data()
 		data->med = (t_page*)mmap(NULL, getpagesize() * 100 * MED_PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
 		data->med = data->med + sizeof(t_page) + 1;
 		// data->med = block_header;
-		data->med += OVERHEAD;
+		data->med += OVERHEAD + 1;
 		printf("INN4: %p\n", data->med);
 		// data->med->end = data->med + 1;
 		data->med->next = NULL;
@@ -136,11 +140,20 @@ static void	*small_med_link(t_page *start, long size, long max)
         while (GET_END(HDRP(bp)) != 1) {
             if (!GET_ALLOC(HDRP(bp))
             && ((int)GET_SIZE(HDRP(bp)) >= size)) {
-                set_allocated(bp, size);
+                set_allocated(bp, size, 0);
                 return bp;
             }
+			printf("SIZE: %d\n", (int)GET_SIZE(HDRP(bp)));
             bp = NEXT_BLKP(bp);
         }
+		if (GET_END(HDRP(bp)) == 1){
+            if (!GET_ALLOC(HDRP(bp))
+            && ((int)GET_SIZE(HDRP(bp)) >= size)) {
+                set_allocated(bp, size, 1);
+                return bp;
+            }
+		}
+		printf("SIZE2: %d\n", (int)GET_SIZE(HDRP(node)));
 		node = node->next;
 	}
 	// if ((char*)node->end + size > (char*)start + max)
@@ -149,7 +162,7 @@ static void	*small_med_link(t_page *start, long size, long max)
 	// 	return (NULL);
 	// }
     node = add_page(max);
-    set_allocated(node, size);
+    set_allocated(node, size, 1);
     return node;
 }
 
@@ -158,8 +171,10 @@ void	*mm_malloc(size_t size)
 	t_page *node;
 
 	size += OVERHEAD;
+	printf("SSSSSIIIIZZZZEEEE: %d\n", (int)size);
 	if (size <= SMALL_SIZE){
-		printf("Size small: %d, Size med: %d\n", (int)GET_SIZE(HDRP(allocated_data()->med)), (int)GET_SIZE(HDRP(allocated_data()->med)));
+		printf("OVERHEAD size = %d\n", (int)OVERHEAD);
+		printf("Size small: %d, Size med: %d\n", (int)GET_SIZE(HDRP(allocated_data()->small)), (int)GET_SIZE(HDRP(allocated_data()->med)));
 		return(small_med_link(allocated_data()->small, size, allocated_data()->small_max));}
 	if (size <= MED_SIZE)
 		return(small_med_link(allocated_data()->med, size, allocated_data()->med_max));

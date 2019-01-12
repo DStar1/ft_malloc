@@ -6,7 +6,7 @@
 /*   By: hasmith <hasmith@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/26 12:39:44 by tanguy            #+#    #+#             */
-/*   Updated: 2019/01/11 18:48:07 by hasmith          ###   ########.fr       */
+/*   Updated: 2019/01/11 19:52:47 by hasmith          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,9 +65,16 @@ int		main()
 	// char *new1 = mm_malloc(sizeof(char)*9);
 	strcpy(new, "h");
 	// printf("%s\n", new);
-	char *new2 = mm_malloc((32 * 4096)+1);
+	char *new2 = mm_malloc(sizeof(char)*9);
+	// char *new2 = mm_malloc((32 * 4096)+1);
 	strcpy(new2, "notharry");
-	printf("%s %p, %s, %p\n", new, new, new2, new2);
+	char *new3 = mm_malloc(sizeof(char)*18);
+	// char *new2 = mm_malloc((32 * 4096)+1);
+	strcpy(new3, "notharryfghdfhd");
+	char *new4 = mm_malloc(sizeof(char)*27);
+	// char *new2 = mm_malloc((32 * 4096)+1);
+	strcpy(new4, "notharrydfghdfghdfghdfgh");
+	printf("%s %p %d: %s %p %d: %s %p %lu: %s %p %lu:\n", new, new, new[0] - new[1], new2, new2, new2[0] - new2[8], new3, new3, sizeof(new3), new4, new4, sizeof(new4));
 	return (0);
 }
 

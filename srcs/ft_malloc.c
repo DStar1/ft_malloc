@@ -6,7 +6,7 @@
 /*   By: hasmith <hasmith@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/08 19:32:16 by hasmith           #+#    #+#             */
-/*   Updated: 2019/01/11 19:55:56 by hasmith          ###   ########.fr       */
+/*   Updated: 2019/01/15 17:17:22 by hasmith          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,15 +180,21 @@ void	*mm_malloc(size_t size)
 		return(small_med_link(allocated_data()->med, size, allocated_data()->med_max));
 	node = allocated_data()->large;
 	//iterate though node to get to NULL
-	while (node->next)
-	{
+	while (node)
 		node = node->next;
-	}
-	node->next = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
-	if (node->next == NULL) {errno = ENOMEM; return(NULL);}
-	node->next->end = (t_page*)((char*)node->next + size);
-	node->next->next = NULL;
-	return (node->next+1);
+	node = (t_page*)mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+	if (node == NULL) {errno = ENOMEM; return(NULL);}
+	node->next = NULL;
+	// //iterate though node to get to NULL
+	// while (node->next)
+	// {
+	// 	node = node->next;
+	// }
+	// node->next = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+	// if (node->next == NULL) {errno = ENOMEM; return(NULL);}
+	// node->next->end = (t_page*)((char*)node->next + size);
+	// node->next->next = NULL;
+	return (node);
 }
 
 

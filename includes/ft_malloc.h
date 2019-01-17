@@ -25,11 +25,12 @@
 #define GET_ALLOC(p) ((block_header *)(p))->allocated
 #define GET_END(p) ((block_header *)(p))->end
 #define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE(HDRP(bp)))
+#define NEXT_PG(bp) ((t_page *)(node - OVERHEAD - sizeof(t_page)))->next ///make sure (-sizeof(t_page)) is correct
 
 typedef struct {
- size_t size;
- char allocated;
- char end;
+	size_t size;
+	char allocated;
+	char end;
 } block_header;
 
 typedef struct s_page {
@@ -81,14 +82,16 @@ typedef struct		s_pages {
 
 
 
-void				*ft_malloc(size_t size);
+// void				*mm_malloc(size_t size);
 // // static void			*add_small_link(t_link *start, long size, long max);
 // t_allocated			*allocated_data();
 
 // void set_allocated(void *bp, size_t size);
 // void extend(size_t new_size);
 // int mm_init();
-void *mm_malloc(size_t size);
+t_pages		*allocated_data();
+void *ft_malloc(size_t size);
+int ft_free(void *ptr);
 
 
 #endif 

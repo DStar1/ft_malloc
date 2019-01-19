@@ -6,7 +6,7 @@
 /*   By: hasmith <hasmith@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/26 12:39:44 by tanguy            #+#    #+#             */
-/*   Updated: 2019/01/18 17:22:17 by hasmith          ###   ########.fr       */
+/*   Updated: 2019/01/18 18:07:56 by hasmith          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,22 @@ int		main()
 	char *med7 = ft_malloc(SMALL_SIZE + 6);
 	// char *new2 = ft_malloc((32 * 4096)+1);
 	strcpy(med7, "wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+
+	char *med1 = ft_malloc(MED_SIZE - 20);
+	strcpy(med1, "wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	char *med2 = ft_malloc(MED_SIZE - 20);
+	strcpy(med2, "wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	char *med3 = ft_malloc(MED_SIZE - 20);
+	strcpy(med3, "wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	char *med4 = ft_malloc(MED_SIZE - 20);
+	strcpy(med4, "wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	char *med10 = ft_malloc(MED_SIZE - 20);
+	strcpy(med10, "wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	char *med8 = ft_malloc(MED_SIZE - 20);
+	strcpy(med8, "wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	char *med9 = ft_malloc(MED_SIZE - 20);
+	strcpy(med9, "wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+
 
 	char *lrg1 = ft_malloc(MED_SIZE + 6);
 	// char *new2 = ft_malloc((32 * 4096)+1);

@@ -7,9 +7,9 @@
 # include <errno.h>
 
 # define SMALL_PAGE_SIZE 8
-# define SMALL_SIZE (8 * 4096)
+# define SMALL_SIZE (SMALL_PAGE_SIZE * 4096)
 # define MED_PAGE_SIZE 32
-# define MED_SIZE (32 * 4096)
+# define MED_SIZE (MED_PAGE_SIZE * 4096)
 
 /*
 ** Trying different way, more efficient

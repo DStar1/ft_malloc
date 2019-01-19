@@ -6,7 +6,7 @@
 /*   By: hasmith <hasmith@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/08 19:32:16 by hasmith           #+#    #+#             */
-/*   Updated: 2019/01/18 17:39:30 by hasmith          ###   ########.fr       */
+/*   Updated: 2019/01/18 19:01:10 by hasmith          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,10 @@ void set_allocated(void *bp, size_t size, char end) {
         GET_SIZE(HDRP(bp)) = size;
 		GET_ALLOC(HDRP((bp))) = 1;
         GET_END(HDRP(bp)) = 0;
+		printf("CHECCKING!!\n");
+		printf("size = %d!!\n", (int)GET_SIZE(HDRP(bp)));//This is the problem. Too large and it is trying to add it to the end of memory
         GET_SIZE(HDRP(NEXT_BLKP(bp))) = extra_size;
+		printf("CHECCKING2!!\n");
         GET_ALLOC(HDRP(NEXT_BLKP(bp))) = 0;
         GET_END(HDRP(NEXT_BLKP(bp))) = end;
 		printf("Last_size: %lu\n", extra_size);
@@ -35,7 +38,8 @@ t_pages		*allocated_data()
 		// data = (t_pages*)mmap(NULL, sizeof(t_pages) + sizeof(t_page) + OVERHEAD + (getpagesize() * 100 * SMALL_PAGE_SIZE) + (getpagesize() * 100 * MED_PAGE_SIZE), PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
 		data = (t_pages*)mmap(NULL, sizeof(t_pages), PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
 		printf("INN2: data: %p\n", data);
-		data->small_max = getpagesize() * 100 * SMALL_PAGE_SIZE;
+		// data->small_max = getpagesize() * 100 * SMALL_PAGE_SIZE;
+		data->small_max = getpagesize() * 1 * SMALL_PAGE_SIZE;//breaks
 		// data->small = (t_page*)data + sizeof(t_pages) + 1;
 		data->small = (t_page*)mmap(NULL, data->small_max, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
 		data->small->end = data->small + data->small_max;
@@ -43,11 +47,12 @@ t_pages		*allocated_data()
 		data->small = data->small + sizeof(t_page) + OVERHEAD + 1;
 		
 		printf("INN3: data->small: %p\n", data->small);
-        GET_SIZE(HDRP(data->small)) = (getpagesize() * 100 * SMALL_PAGE_SIZE) - OVERHEAD - sizeof(t_page);
+        GET_SIZE(HDRP(data->small)) = (data->small_max) - OVERHEAD - sizeof(t_page);
         GET_ALLOC(HDRP(data->small)) = 0;
         GET_END(HDRP(data->small)) = 1;
 		printf("INN3BBB\n");
-		data->med_max = getpagesize() * 100 * MED_PAGE_SIZE;
+		// data->med_max = getpagesize() * 100 * MED_PAGE_SIZE;
+		data->med_max = getpagesize() * 1 * MED_PAGE_SIZE;///breaks
 		printf("INN3CCC\n");
 		// data->med = (t_page*)END_PG(data->small) + 1;////////????????
 		data->med = (t_page*)mmap(NULL, data->med_max, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
@@ -59,7 +64,7 @@ t_pages		*allocated_data()
 		data->med = data->med + sizeof(t_page) + OVERHEAD + 1;
 		
 		printf("INN5\n");
-        GET_SIZE(HDRP(data->med)) = (getpagesize() * 100 * MED_PAGE_SIZE) - OVERHEAD - sizeof(t_page);
+        GET_SIZE(HDRP(data->med)) = (data->med_max) - OVERHEAD - sizeof(t_page);
 		printf("INN6\n");
         GET_ALLOC(HDRP(data->med)) = 0;
         GET_END(HDRP(data->med)) = 1;
@@ -141,10 +146,11 @@ t_pages		*allocated_data()
 // }
 
 t_page *add_page(size_t size) {
-    t_page *bp = mmap(NULL, size /*plus OVERHEAD and t_page)*/, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+    t_page *bp = (t_page*)mmap(NULL, size/*plus OVERHEAD and t_page)*/, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
 	bp->next = NULL;
-    bp += OVERHEAD + 1;
-    GET_SIZE(HDRP(bp)) = size - OVERHEAD;
+	bp->end = bp + size;
+    bp += sizeof(t_page) + OVERHEAD + 1;
+    GET_SIZE(HDRP(bp)) = size - sizeof(t_page) - OVERHEAD;
     GET_ALLOC(HDRP(bp)) = 0;
     GET_END(HDRP(bp)) = 1;
     return (bp);
@@ -153,9 +159,11 @@ t_page *add_page(size_t size) {
 static void	*small_med_link(t_page *start, long size, long max)
 {
 	t_page *node;
+	t_page *last;
 	// t_page *tmp;
 
 	node = start;
+	last = node;
 	while (node)
 	{
 		printf("IIINNNNN   SSSSSMMMMAAAALLLL MED\n");
@@ -178,6 +186,7 @@ static void	*small_med_link(t_page *start, long size, long max)
 		}
 		printf("SIZE2: %d\n", (int)GET_SIZE(HDRP(node)));
 		// node = node->next;
+		last = node;
 		node = NEXT_PG(node);
 	}
 	// if ((char*)node->end + size > (char*)start + max)
@@ -185,9 +194,12 @@ static void	*small_med_link(t_page *start, long size, long max)
 	// 	errno = ENOMEM;
 	// 	return (NULL);
 	// }
-    node = add_page(max);
-    set_allocated(node, size, 1);
-    return (node);
+	printf("Trying to allocate new page\n");
+    last->next = add_page(max);
+	printf("Allocated new page\n");
+    set_allocated(last->next, size, 1); ////This problem will go away if you add back the right page sizes
+	printf("set new page with memory\n");
+    return (last->next + 1);
 }
 
 void	*ft_malloc(size_t size)

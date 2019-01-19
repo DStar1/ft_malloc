@@ -38,7 +38,6 @@ void	*free_defrag(void *start)
         }
         bp = NEXT_BLKP(bp);
     }
-
     return (NULL);
 }
 

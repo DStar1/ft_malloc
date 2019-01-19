@@ -6,7 +6,7 @@
 /*   By: hasmith <hasmith@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/08 19:32:16 by hasmith           #+#    #+#             */
-/*   Updated: 2019/01/16 17:58:32 by hasmith          ###   ########.fr       */
+/*   Updated: 2019/01/18 17:39:30 by hasmith          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,42 +32,49 @@ t_pages		*allocated_data()
 	if (!data)
 	{
 		printf("INN1\n");
-		data = mmap(NULL, sizeof(t_pages), PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+		// data = (t_pages*)mmap(NULL, sizeof(t_pages) + sizeof(t_page) + OVERHEAD + (getpagesize() * 100 * SMALL_PAGE_SIZE) + (getpagesize() * 100 * MED_PAGE_SIZE), PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+		data = (t_pages*)mmap(NULL, sizeof(t_pages), PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
 		printf("INN2: data: %p\n", data);
 		data->small_max = getpagesize() * 100 * SMALL_PAGE_SIZE;
-		data->small = (t_page*)mmap(NULL, /*plus OVERHEAD and t_page?)*/getpagesize() * 100 * SMALL_PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
-		data->small = data->small + sizeof(t_page) + 1;
-		data->small->next = NULL;///Possibl WRONG ORDER SEE LRG WAY OF DOING IT
-		// data->small = block_header;
-		data->small += OVERHEAD + 1;
-		// data->small->end = data->small + 2;
+		// data->small = (t_page*)data + sizeof(t_pages) + 1;
+		data->small = (t_page*)mmap(NULL, data->small_max, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+		data->small->end = data->small + data->small_max;
+		data->small->next = NULL;
+		data->small = data->small + sizeof(t_page) + OVERHEAD + 1;
 		
 		printf("INN3: data->small: %p\n", data->small);
-        GET_SIZE(HDRP(data->small)) = sizeof(t_page) + (getpagesize() * 100 * SMALL_PAGE_SIZE) - OVERHEAD;
+        GET_SIZE(HDRP(data->small)) = (getpagesize() * 100 * SMALL_PAGE_SIZE) - OVERHEAD - sizeof(t_page);
         GET_ALLOC(HDRP(data->small)) = 0;
         GET_END(HDRP(data->small)) = 1;
+		printf("INN3BBB\n");
 		data->med_max = getpagesize() * 100 * MED_PAGE_SIZE;
-		data->med = (t_page*)mmap(NULL, /*plus OVERHEAD and t_page?)*/getpagesize() * 100 * MED_PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
-		data->med = data->med + sizeof(t_page) + 1;
+		printf("INN3CCC\n");
+		// data->med = (t_page*)END_PG(data->small) + 1;////////????????
+		data->med = (t_page*)mmap(NULL, data->med_max, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+		printf("INN3DDDD\n");
+		data->med->end = (void*)(data->med + data->med_max);
+		printf("INN3EEEEEE\n");
 		data->med->next = NULL;
-		// data->med = block_header;
-		data->med += OVERHEAD + 1;
-		printf("INN4: %p\n", data->med);
-		// data->med->end = data->med + 1;
+		printf("INN4\n");
+		data->med = data->med + sizeof(t_page) + OVERHEAD + 1;
 		
 		printf("INN5\n");
-        GET_SIZE(HDRP(data->med)) = sizeof(t_page) + (getpagesize() * 100 * MED_PAGE_SIZE) - OVERHEAD;
+        GET_SIZE(HDRP(data->med)) = (getpagesize() * 100 * MED_PAGE_SIZE) - OVERHEAD - sizeof(t_page);
 		printf("INN6\n");
         GET_ALLOC(HDRP(data->med)) = 0;
         GET_END(HDRP(data->med)) = 1;
 		printf("INN7\n");
-		// data->large = (t_page*)(data->med_max + OVERHEAD + 1);
-		// // data->large->end = data->large + 1;
-		data->large = NULL;///////////////
-		// data->large->next = NULL;
-        // // GET_SIZE(HDRP(data->large)) = 0;
-        // GET_ALLOC(HDRP(data->large)) = 0;
-        // GET_END(HDRP(data->large)) = 1;
+
+		// data->large = (t_page*)END_PG(data->med) + 1;
+		data->large = (t_page*)mmap(NULL, sizeof(t_page) + OVERHEAD + 1, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+		data->large->next = NULL;
+		data->large->end = data->large + sizeof(t_page) + OVERHEAD + 1;
+		printf("Original ptr for larg: %p, and larg->next: %p\n", data->large, data->large->next);
+		data->large += sizeof(t_page) + OVERHEAD + 1;
+		GET_SIZE(HDRP(data->large)) = 0;
+		GET_ALLOC(HDRP(data->large)) = 1;
+		printf("Finding next large: %p, size: %d, allocated: %d\n", NEXT_PG(data->large), (int)GET_SIZE(HDRP(data->large)),(int)GET_ALLOC(HDRP(data->large)));
+
 
 		printf("t_pages: %p, small ptr: %p, med ptr: %p\n", data, data->small+OVERHEAD, data->med+OVERHEAD);
 	}
@@ -78,48 +85,59 @@ t_pages		*allocated_data()
 // {
 // 	if (!data)
 // 	{
-// 		data = mmap(NULL, sizeof(t_pages) + getpagesize() * 100 * SMALL_PAGE_SIZE
-// 					+ getpagesize() * 100 * MED_PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+// 		printf("INN1\n");
+// 		data = mmap(NULL, sizeof(t_pages), PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+// 		printf("INN2: data: %p\n", data);
 // 		data->small_max = getpagesize() * 100 * SMALL_PAGE_SIZE;
-// 		data->small = (t_page*)(data + sizeof(t_pages) + OVERHEAD + 1);
-// 		// data->small->end = data->small + 2;
+// 		data->small = (t_page*)mmap(NULL, /*sizeof(t_page) + OVERHEAD + */getpagesize() * 100 * SMALL_PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+// 		data->small->end = data->small + data->small_max;
 // 		data->small->next = NULL;
-//         GET_SIZE(HDRP(data->small)) = SMALL_SIZE - OVERHEAD;
+// 		data->small = data->small + sizeof(t_page) + OVERHEAD + 1;
+		
+// 		printf("INN3: data->small: %p\n", data->small);
+//         GET_SIZE(HDRP(data->small)) = sizeof(t_page) + (getpagesize() * 100 * SMALL_PAGE_SIZE) - OVERHEAD;
 //         GET_ALLOC(HDRP(data->small)) = 0;
 //         GET_END(HDRP(data->small)) = 1;
 // 		data->med_max = getpagesize() * 100 * MED_PAGE_SIZE;
-// 		data->med = (t_page*)(data->small_max + OVERHEAD + 1);
-// 		// data->med->end = data->med + 1;
+// 		data->med = (t_page*)mmap(NULL, /*sizeof(t_page) + OVERHEAD + */getpagesize() * 100 * MED_PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+// 		data->med->end = data->med + data->med_max;
 // 		data->med->next = NULL;
-//         GET_SIZE(HDRP(data->med)) = MED_SIZE - OVERHEAD;
+// 		data->med = data->med + sizeof(t_page) + OVERHEAD + 1;
+// 		// data->med = block_header;
+// 		// data->med += OVERHEAD + 1;
+// 		printf("INN4: %p\n", data->med);
+// 		// data->med->end = data->med + 1;
+		
+// 		printf("INN5\n");
+//         GET_SIZE(HDRP(data->med)) = sizeof(t_page) + (getpagesize() * 100 * MED_PAGE_SIZE) - OVERHEAD;
+// 		printf("INN6\n");
 //         GET_ALLOC(HDRP(data->med)) = 0;
 //         GET_END(HDRP(data->med)) = 1;
-// 		data->large = (t_page*)(data->med_max + OVERHEAD + 1);
-// 		// data->large->end = data->large + 1;
-// 		data->large->next = NULL;
-//         // GET_SIZE(HDRP(data->large)) = 0;
-//         GET_ALLOC(HDRP(data->large)) = 0;
-//         GET_END(HDRP(data->large)) = 1;
+// 		printf("INN7\n");
+// 		// data->large = (t_page*)(data->med_max + OVERHEAD + 1);
+// 		// // data->large->end = data->large + 1;
+
+// 		// data->large = NULL;
+// 		data->large = (t_page*)mmap(NULL, sizeof(t_page) + OVERHEAD, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+// 		data->large->next = (t_page*)mmap(NULL, sizeof(t_page) + OVERHEAD, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);;///////////////
+// 		data->large->end = data->large + sizeof(t_page) + OVERHEAD;
+// 		printf("Original ptr for larg: %p, and larg->next: %p\n", data->large, data->large->next);
+// 		data->large += sizeof(t_page) + OVERHEAD + 1;
+// 		GET_SIZE(HDRP(data->large)) = 0;
+// 		GET_ALLOC(HDRP(data->large)) = 1;
+// 		printf("Finding next large: %p, size: %d, allocated: %d\n", NEXT_PG(data->large), (int)GET_SIZE(HDRP(data->large)),(int)GET_ALLOC(HDRP(data->large)));
+
+// // 0x101071000
+
+// 		// data->large = NULL;
+
+//         // // GET_SIZE(HDRP(data->large)) = 0;
+//         // GET_ALLOC(HDRP(data->large)) = 0;
+//         // GET_END(HDRP(data->large)) = 1;
+
+// 		printf("t_pages: %p, small ptr: %p, med ptr: %p\n", data, data->small+OVERHEAD, data->med+OVERHEAD);
 // 	}
 // 	return (data);
-// }
-
-// void *current_avail = NULL;
-// size_t current_avail_size = 0;
-// void *mm_malloc(size_t size) {
-//     size_t newsize = ALIGN(size);
-//     void *p;
-//     if (current_avail_size < newsize) {
-//         current_avail = mmap(0, CHUNK_ALIGN(newsize),
-//         PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON,
-//         -1, 0);
-//         current_avail_size = CHUNK_ALIGN(newsize);
-//     }
-//     p = current_avail;
-// 	printf("%p\n", p);
-//     current_avail += newsize;
-//     current_avail_size -= newsize;
-//     return p;
 // }
 
 t_page *add_page(size_t size) {
@@ -140,6 +158,7 @@ static void	*small_med_link(t_page *start, long size, long max)
 	node = start;
 	while (node)
 	{
+		printf("IIINNNNN   SSSSSMMMMAAAALLLL MED\n");
         void *bp = node;
         while (GET_END(HDRP(bp)) != 1) {
             if (!GET_ALLOC(HDRP(bp))
@@ -185,29 +204,39 @@ void	*ft_malloc(size_t size)
 		return(small_med_link(allocated_data()->med, size, allocated_data()->med_max));
 	node = allocated_data()->large;
 	//iterate though node to get to NULL
-	while (node){
-		printf("large_string loop: %s\n", (char*)node);
-		node = NEXT_PG(node);
-	}
-	node = (t_page*)mmap(NULL, size + sizeof(t_page) + OVERHEAD, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
-	if (node == NULL) {errno = ENOMEM; return(NULL);}
-	node->next = NULL;
-	node += sizeof(t_page) + 1;
-	node += OVERHEAD + 1;
-	GET_SIZE(HDRP(node)) = size;
-	GET_ALLOC(HDRP(node)) = 1;//not_needed
-	GET_END(HDRP(node)) = 1;//not needed
-
-	// //iterate though node to get to NULL
-	// while (node->next)
-	// {
-	// 	node = node->next;
+	printf("Lrg node: %p\n", node);
+	printf("Should be same as orig larg ptr: %p, and next should be the same: %p\n", (t_page *)(node - OVERHEAD - sizeof(t_page)), NEXT_PG(node));
+	// while (node != NULL){
+	// 	printf("large_string loop: %p, next node: %p\n", node, NEXT_PG(node));
+	// 	node = NEXT_PG(node);
 	// }
+	// node = (t_page*)mmap(NULL, size + sizeof(t_page) + OVERHEAD, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+	// if (node == NULL) {errno = ENOMEM; return(NULL);}
+	// printf("AFTER Lrg node: %p\n", node);
+	// node->next = NULL;
+	// node += sizeof(t_page);
+	// node += OVERHEAD + 1;
+	// GET_SIZE(HDRP(node)) = size;
+	// GET_ALLOC(HDRP(node)) = 1;//not_needed
+	// GET_END(HDRP(node)) = 1;//not needed
+	
+// 0x10a98f220
+// 0x10a98f220
+
+	//iterate though node to get to NULL
+	while (node->next)
+	{
+		node = node->next;
+	}
 	// node->next = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
-	// if (node->next == NULL) {errno = ENOMEM; return(NULL);}
-	// node->next->end = (t_page*)((char*)node->next + size);
-	// node->next->next = NULL;
-	return (node);
+	node->next = mmap(NULL, size + sizeof(t_page) + OVERHEAD, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+	if (node->next == NULL) {errno = ENOMEM; return(NULL);}
+	node->next->end = (t_page*)((char*)node->next + size + sizeof(t_page) + OVERHEAD);
+	node->next->next = NULL;
+	node->next += sizeof(t_page) + OVERHEAD + 1;
+	GET_SIZE(HDRP(node->next)) = 0;
+	GET_ALLOC(HDRP(node->next)) = 1;
+	return (node->next + 1);
 }
 
 

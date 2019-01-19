@@ -25,7 +25,8 @@
 #define GET_ALLOC(p) ((block_header *)(p))->allocated
 #define GET_END(p) ((block_header *)(p))->end
 #define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE(HDRP(bp)))
-#define NEXT_PG(bp) ((t_page *)(node - OVERHEAD - sizeof(t_page)))->next ///make sure (-sizeof(t_page)) is correct
+#define NEXT_PG(bp) ((t_page *)(bp - (sizeof(t_page) + OVERHEAD + 1)))->next ///make sure (-sizeof(t_page)) is correct
+#define END_PG(bp) ((t_page *)(bp - (sizeof(t_page) + OVERHEAD + 1)))->end ///make sure (-sizeof(t_page)) is correct
 
 typedef struct {
 	size_t size;

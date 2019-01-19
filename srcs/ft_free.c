@@ -93,12 +93,28 @@ int ft_free(void *ptr)
 		return(1);
     }
     node = allocated_data()->large;
-    printf("Large: %p\n", node);
-    while (node){
-        printf("lrg_ptr: %p\n", node);
-        tmp = node;
-		node = NEXT_PG(node);
-    }
+    // printf("Large: %p\n", node);
+    // while (node){
+    //     printf("lrg_ptr: %p\n", node);
+    //     tmp = node;
+	// 	node = NEXT_PG(node);
+    // }
+
+
+	while (node->next != NULL)
+	{
+        printf("In LARGE loop\n");
+		if (ptr == node->next + 1)
+		{
+            printf("Freeing %p\n", node->next + 1);
+			tmp = node->next->next;
+			munmap(node->next, (char*)node->next->end - (char*)node->next);
+            node->next = tmp;
+			return (1);
+		}
+		node = node->next;
+	}
+
 	//iterate though node to get to NULL
 	// while (NEXT_PG(node) != NULL)
 	// {

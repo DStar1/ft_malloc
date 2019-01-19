@@ -6,7 +6,7 @@
 /*   By: hasmith <hasmith@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/26 12:39:44 by tanguy            #+#    #+#             */
-/*   Updated: 2019/01/16 17:53:12 by hasmith          ###   ########.fr       */
+/*   Updated: 2019/01/18 17:22:17 by hasmith          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,12 +102,14 @@ int		main()
 
 	printf("%s %p %d: %s %p %d: %s %p %lu: %s %p %lu:\n", new, new, new[0] - new[1], new2, new2, new2[0] - new2[8], new3, new3, sizeof(new3), new4, new4, sizeof(new4));
 	printf("%s\n %p:  \n%s\n %p\n%s\n %p\n", med5, med5, med6, med6, med7, med7);
+	// printf("%s\n %p\n", lrg1, lrg1);
 	printf("%s\n %p:  \n%s\n %p\n%s\n %p\n", lrg1, lrg1, lrg2, lrg2, lrg3, lrg3);
 
-	// ft_free(med6);
+	ft_free(med6);
 	// ft_free(med7);
-	// ft_free(lrg1);
-	ft_free(lrg2);
+	ft_free(lrg1);
+	// ft_free(lrg2);
+	ft_free(lrg3);
 
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: hasmith <hasmith@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/08 19:32:16 by hasmith           #+#    #+#             */
-/*   Updated: 2019/01/18 19:01:10 by hasmith          ###   ########.fr       */
+/*   Updated: 2019/02/25 23:33:07 by hasmith          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,18 @@
 
 void set_allocated(void *bp, size_t size, char end) {
     size_t extra_size = GET_SIZE(HDRP(bp)) - size;
-    if (extra_size > ALIGN(1 + OVERHEAD)) {
+    // if (extra_size > ALIGN(1 + OVERHEAD)) {
         GET_SIZE(HDRP(bp)) = size;
 		GET_ALLOC(HDRP((bp))) = 1;
         GET_END(HDRP(bp)) = 0;
 		printf("CHECCKING!!\n");
-		printf("size = %d!!\n", (int)GET_SIZE(HDRP(bp)));//This is the problem. Too large and it is trying to add it to the end of memory
+		printf("size = %d, should be: %d!!\n", (int)GET_SIZE(HDRP(bp)), (int)size);//This is the problem. Too large and it is trying to add it to the end of memory
         GET_SIZE(HDRP(NEXT_BLKP(bp))) = extra_size;
 		printf("CHECCKING2!!\n");
         GET_ALLOC(HDRP(NEXT_BLKP(bp))) = 0;
         GET_END(HDRP(NEXT_BLKP(bp))) = end;
 		printf("Last_size: %lu\n", extra_size);
-    }
+    // }
     // GET_ALLOC(HDRP(bp)) = 1;
 }
 
@@ -146,13 +146,15 @@ t_pages		*allocated_data()
 // }
 
 t_page *add_page(size_t size) {
-    t_page *bp = (t_page*)mmap(NULL, size/*plus OVERHEAD and t_page)*/, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+    t_page *bp = (t_page*)mmap(NULL, size + OVERHEAD + sizeof(t_page)/*plus OVERHEAD and t_page)*/, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
 	bp->next = NULL;
 	bp->end = bp + size;
-    bp += sizeof(t_page) + OVERHEAD + 1;
+	// data->small + sizeof(t_page) + OVERHEAD + 1;
+    bp = bp + sizeof(t_page) + OVERHEAD + 1;
     GET_SIZE(HDRP(bp)) = size - sizeof(t_page) - OVERHEAD;
     GET_ALLOC(HDRP(bp)) = 0;
     GET_END(HDRP(bp)) = 1;
+
     return (bp);
 }
 
@@ -171,6 +173,7 @@ static void	*small_med_link(t_page *start, long size, long max)
         while (GET_END(HDRP(bp)) != 1) {
             if (!GET_ALLOC(HDRP(bp))
             && ((int)GET_SIZE(HDRP(bp)) >= size)) {
+				printf("\nNOT END\n");
                 set_allocated(bp, size, 0);
                 return bp;
             }
@@ -180,6 +183,7 @@ static void	*small_med_link(t_page *start, long size, long max)
 		if (GET_END(HDRP(bp)) == 1){
             if (!GET_ALLOC(HDRP(bp))
             && ((int)GET_SIZE(HDRP(bp)) >= size)) {
+				printf("\nEND\n");
                 set_allocated(bp, size, 1);
                 return bp;
             }
@@ -188,6 +192,7 @@ static void	*small_med_link(t_page *start, long size, long max)
 		// node = node->next;
 		last = node;
 		node = NEXT_PG(node);
+		printf("Next Node: %p\n", node);
 	}
 	// if ((char*)node->end + size > (char*)start + max)
 	// {
@@ -195,11 +200,14 @@ static void	*small_med_link(t_page *start, long size, long max)
 	// 	return (NULL);
 	// }
 	printf("Trying to allocate new page\n");
-    last->next = add_page(max);
+    // last->next = add_page(max);
+    NEXT_PG(last) = add_page(max);
 	printf("Allocated new page\n");
-    set_allocated(last->next, size, 1); ////This problem will go away if you add back the right page sizes
+    // set_allocated(last->next, size, 1); ////This problem will go away if you add back the right page sizes
+    set_allocated(NEXT_PG(last), size, 1); ////This problem will go away if you add back the right page sizes
 	printf("set new page with memory\n");
-    return (last->next + 1);
+    return (NEXT_PG(last) + 1);
+    // return (last->next + 1);
 }
 
 void	*ft_malloc(size_t size)
@@ -212,8 +220,10 @@ void	*ft_malloc(size_t size)
 		printf("OVERHEAD size = %d\n", (int)OVERHEAD);
 		printf("Size small: %d, Size med: %d\n", (int)GET_SIZE(HDRP(allocated_data()->small)), (int)GET_SIZE(HDRP(allocated_data()->med)));
 		return(small_med_link(allocated_data()->small, size, allocated_data()->small_max));}
-	if (size <= MED_SIZE)
+	if (size <= MED_SIZE){
+		printf("Size med: %d\n", (int)allocated_data()->med_max);
 		return(small_med_link(allocated_data()->med, size, allocated_data()->med_max));
+	}
 	node = allocated_data()->large;
 	//iterate though node to get to NULL
 	printf("Lrg node: %p\n", node);

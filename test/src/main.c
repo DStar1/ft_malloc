@@ -6,7 +6,7 @@
 /*   By: hasmith <hasmith@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/26 12:39:44 by tanguy            #+#    #+#             */
-/*   Updated: 2019/01/18 18:07:56 by hasmith          ###   ########.fr       */
+/*   Updated: 2019/02/25 23:32:21 by hasmith          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int		main()
 
 	char *med5 = ft_malloc(SMALL_SIZE + 1);
 	// char *new2 = ft_malloc((32 * 4096)+1);
-	strcpy(med5, "notharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	strcpy(med5, "med5notharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
 
 
 	char *new3 = ft_malloc(sizeof(char)*18);
@@ -83,25 +83,36 @@ int		main()
 
 	char *med6 = ft_malloc(SMALL_SIZE + 18);
 	// char *new2 = ft_malloc((32 * 4096)+1);
-	strcpy(med6, "isharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	strcpy(med6, "med6isharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
 	char *med7 = ft_malloc(SMALL_SIZE + 6);
 	// char *new2 = ft_malloc((32 * 4096)+1);
-	strcpy(med7, "wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	strcpy(med7, "med7wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
 
-	char *med1 = ft_malloc(MED_SIZE - 20);
-	strcpy(med1, "wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
-	char *med2 = ft_malloc(MED_SIZE - 20);
-	strcpy(med2, "wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
-	char *med3 = ft_malloc(MED_SIZE - 20);
-	strcpy(med3, "wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
-	char *med4 = ft_malloc(MED_SIZE - 20);
-	strcpy(med4, "wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
-	char *med10 = ft_malloc(MED_SIZE - 20);
-	strcpy(med10, "wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
-	char *med8 = ft_malloc(MED_SIZE - 20);
-	strcpy(med8, "wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
-	char *med9 = ft_malloc(MED_SIZE - 20);
-	strcpy(med9, "wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+
+printf("\n\n1\n\n\n");
+
+	char *med1 = ft_malloc(MED_SIZE - 50);
+	strcpy(med1, "med1wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+
+printf("\n\n2\n\n\n");
+	char *med2 = ft_malloc(MED_SIZE - 50);
+	strcpy(med2, "med2wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	printf("\n\n3\n\n\n");
+	char *med3 = ft_malloc(MED_SIZE  - 50);
+	strcpy(med3, "med3wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	printf("\n\n4\n\n\n");
+	char *med4 = ft_malloc(MED_SIZE - 50);
+	strcpy(med4, "med4wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	printf("\n\n5\n\n\n");
+	char *med10 = ft_malloc(MED_SIZE - 50);
+	strcpy(med10, "med10wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	printf("\n\n6\n\n\n");
+	char *med8 = ft_malloc(MED_SIZE - 50);
+	strcpy(med8, "med8wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	printf("\n\n7\n\n\n");
+	char *med9 = ft_malloc(MED_SIZE - 50);
+	strcpy(med9, "med9wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	printf("\n\n8\n\n\n");
 
 
 	char *lrg1 = ft_malloc(MED_SIZE + 6);
@@ -117,7 +128,7 @@ int		main()
 	strcpy(lrg3, "lrg3harrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");	
 
 	printf("%s %p %d: %s %p %d: %s %p %lu: %s %p %lu:\n", new, new, new[0] - new[1], new2, new2, new2[0] - new2[8], new3, new3, sizeof(new3), new4, new4, sizeof(new4));
-	printf("%s\n %p:  \n%s\n %p\n%s\n %p\n", med5, med5, med6, med6, med7, med7);
+	printf("4 :%s\n %p:  \n5 :%s\n %p\n6: %s\n %p\n\n3: %s\n %p\n", med4, med4, med5, med5, med6, med6, med3, med3);
 	// printf("%s\n %p\n", lrg1, lrg1);
 	printf("%s\n %p:  \n%s\n %p\n%s\n %p\n", lrg1, lrg1, lrg2, lrg2, lrg3, lrg3);
 

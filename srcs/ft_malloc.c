@@ -6,7 +6,7 @@
 /*   By: hasmith <hasmith@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/08 19:32:16 by hasmith           #+#    #+#             */
-/*   Updated: 2019/02/25 23:33:07 by hasmith          ###   ########.fr       */
+/*   Updated: 2019/02/25 23:41:32 by hasmith          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,6 +178,7 @@ static void	*small_med_link(t_page *start, long size, long max)
                 return bp;
             }
 			printf("SIZE: %d\n", (int)GET_SIZE(HDRP(bp)));
+			printf("\nstr: %s\n", (char*)bp);
             bp = NEXT_BLKP(bp);
         }
 		if (GET_END(HDRP(bp)) == 1){
@@ -206,7 +207,7 @@ static void	*small_med_link(t_page *start, long size, long max)
     // set_allocated(last->next, size, 1); ////This problem will go away if you add back the right page sizes
     set_allocated(NEXT_PG(last), size, 1); ////This problem will go away if you add back the right page sizes
 	printf("set new page with memory\n");
-    return (NEXT_PG(last) + 1);
+    return (NEXT_PG(last));
     // return (last->next + 1);
 }
 

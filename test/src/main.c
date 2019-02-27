@@ -6,7 +6,7 @@
 /*   By: hasmith <hasmith@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/26 12:39:44 by tanguy            #+#    #+#             */
-/*   Updated: 2019/02/25 23:32:21 by hasmith          ###   ########.fr       */
+/*   Updated: 2019/02/26 20:46:01 by hasmith          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,11 +132,19 @@ printf("\n\n2\n\n\n");
 	// printf("%s\n %p\n", lrg1, lrg1);
 	printf("%s\n %p:  \n%s\n %p\n%s\n %p\n", lrg1, lrg1, lrg2, lrg2, lrg3, lrg3);
 
+	printf("Freeing med6\n");
 	ft_free(med6);
 	// ft_free(med7);
+	printf("Freeing lrg1\n");
 	ft_free(lrg1);
 	// ft_free(lrg2);
+	printf("Freeing lrg3\n");
 	ft_free(lrg3);
+	printf("Freeing lrg2\n");
+	ft_free(lrg2);
+	printf("Freeing med7\n");
+	ft_free(med7);
+
 
 	return (0);
 }

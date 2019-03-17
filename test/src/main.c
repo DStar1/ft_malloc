@@ -6,7 +6,7 @@
 /*   By: hasmith <hasmith@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/26 12:39:44 by tanguy            #+#    #+#             */
-/*   Updated: 2019/01/06 22:21:19 by hasmith          ###   ########.fr       */
+/*   Updated: 2019/03/16 17:53:00 by hasmith          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,105 @@ void print(char *s)
 // 	return 0;
 // }
 
+// int		main()
+// {
+// 	// ft_printf("Project %s successfully created! \n", argv[0]);
+// 	char *new = ft_malloc(sizeof(char)*9);
+// 	strcpy(new, "harrison");
+// 	printf("%s\n", new);
+// 	// char *new2 = ft_malloc(sizeof(char)*9);
+// 	// strcpy(new2, "notharry");
+// 	// printf("%s, %s\n", new, new2);
+// 	return (0);
+// }
 int		main()
 {
 	// ft_printf("Project %s successfully created! \n", argv[0]);
-	char *new = ft_malloc(sizeof(char)*9);
-	strcpy(new, "harrison");
-	printf("%s\n", new);
+	char *new = ft_malloc(sizeof(char)*2);
+	// char *new1 = ft_malloc(sizeof(char)*9);
+	strcpy(new, "h");
+	// printf("%s\n", new);
+	char *new2 = ft_malloc(sizeof(char)*9);
+	// char *new2 = ft_malloc((32 * 4096)+1);
+	strcpy(new2, "notharry");
+
+	char *med5 = ft_malloc(SMALL_SIZE + 1);
+	// char *new2 = ft_malloc((32 * 4096)+1);
+	strcpy(med5, "med5notharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+
+
+	char *new3 = ft_malloc(sizeof(char)*18);
+	// char *new2 = ft_malloc((32 * 4096)+1);
+	strcpy(new3, "notharryfghdfhd");
+	char *new4 = ft_malloc(sizeof(char)*27);
+	// char *new2 = ft_malloc((32 * 4096)+1);
+	strcpy(new4, "notharrydfghdfghdfghdfgh");
+
+	char *med6 = ft_malloc(SMALL_SIZE + 18);
+	// char *new2 = ft_malloc((32 * 4096)+1);
+	strcpy(med6, "med6isharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	char *med7 = ft_malloc(SMALL_SIZE + 6);
+	// char *new2 = ft_malloc((32 * 4096)+1);
+	strcpy(med7, "med7wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+
+
+// printf("\n\n1\n\n\n");
+
+	char *med1 = ft_malloc(MED_SIZE - 50);
+	strcpy(med1, "med1wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+
+// printf("\n\n2\n\n\n");
+	char *med2 = ft_malloc(MED_SIZE - 50);
+	strcpy(med2, "med2wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	// printf("\n\n3\n\n\n");
+	char *med3 = ft_malloc(MED_SIZE  - 50);
+	strcpy(med3, "med3wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	// printf("\n\n4\n\n\n");
+	char *med4 = ft_malloc(MED_SIZE - 50);
+	strcpy(med4, "med4wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	// printf("\n\n5\n\n\n");
+	char *med10 = ft_malloc(MED_SIZE - 50);
+	strcpy(med10, "med10wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	// printf("\n\n6\n\n\n");
+	char *med8 = ft_malloc(MED_SIZE - 50);
+	strcpy(med8, "med8wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	// printf("\n\n7\n\n\n");
+	char *med9 = ft_malloc(MED_SIZE - 50);
+	strcpy(med9, "med9wowharrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+	// printf("\n\n8\n\n\n");
+
+
+	char *lrg1 = ft_malloc(MED_SIZE + 6);
+	// char *new2 = ft_malloc((32 * 4096)+1);
+	strcpy(lrg1, "lrg1harrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");
+
+	char *lrg2 = ft_malloc(MED_SIZE + 16);
+	// char *new2 = ft_malloc((32 * 4096)+1);
+	strcpy(lrg2, "lrg2harrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");	
+
+	char *lrg3 = ft_malloc(MED_SIZE + 1);
+	// char *new2 = ft_malloc((32 * 4096)+1);
+	strcpy(lrg3, "lrg3harrydfghdfghdfghdfghkjfhslfkjahsflksfjhslkfhsfk");	
+
+	printf("%s %p %d: %s %p %d: %s %p %lu: %s %p %lu:\n", new, new, new[0] - new[1], new2, new2, new2[0] - new2[8], new3, new3, sizeof(new3), new4, new4, sizeof(new4));
+	printf("4 :%s\n %p:  \n5 :%s\n %p\n6: %s\n %p\n\n3: %s\n %p\n", med4, med4, med5, med5, med6, med6, med3, med3);
+	// printf("%s\n %p\n", lrg1, lrg1);
+	printf("%s\n %p:  \n%s\n %p\n%s\n %p\n", lrg1, lrg1, lrg2, lrg2, lrg3, lrg3);
+
+	printf("Freeing med6\n");
+	ft_free(med6);
+	// ft_free(med7);
+	printf("Freeing lrg1\n");
+	ft_free(lrg1);
+	// ft_free(lrg2);
+	printf("Freeing lrg3\n");
+	ft_free(lrg3);
+	printf("Freeing lrg2\n");
+	ft_free(lrg2);
+	printf("Freeing med7\n");
+	ft_free(med7);
+
+
 	return (0);
 }
 

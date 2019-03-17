@@ -21,7 +21,7 @@ OBJ_DIR = ./objs/
 INC_DIR = ./includes/
 LIBFT_DIR = ./libft/
 
-SRC_FILES = ft_malloc.c
+SRC_FILES = ft_malloc.c ft_free.c
 OBJ_FILES = $(SRC_FILES:.c=.o)
 
 SRC = $(addprefix $(SRC_DIR), $(SRC_FILES))
@@ -60,5 +60,11 @@ fclean: clean
 	printf "\033[31m[ ✔ ] %s\n\033[0m" "Fcleaned $(NAME) and $(LINK)"
 
 re: fclean all
+
+t:
+	make re
+	export DYLD_LIBRARY_PATH=test
+	./exec_malloc_test
+	export DYLD_LIBRARY_PATH=..
 
 .PHONY: all clean fclean re
